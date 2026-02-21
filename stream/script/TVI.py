@@ -2,7 +2,7 @@ import requests
 import re
 import os
 
-M3U_FILE = "TVI.m3u"
+M3U_FILE = "stream/TVI.m3u8"
 TOKEN_URL = "https://services.iol.pt/matrix?userId="  # ← adiciona o userId aqui ou via variável de ambiente
 
 def update_wms_auth_sign():
