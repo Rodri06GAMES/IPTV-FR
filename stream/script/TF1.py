@@ -1,8 +1,8 @@
 import requests
 import os
 
-SOURCE_M3U = "https://raw.githubusercontent.com/Paradise-91/ParaTV/refs/heads/main/playlists/paratv/main/paratv.m3u"
-OUTPUT_FILE = "stream/tf1.m3u8"
+SOURCE_M3U = "https://raw.githubusercontent.com/LITUATUI/M3UPT/main/M3U/M3UPT.m3u"
+OUTPUT_FILE = "stream/tvi.m3u8"
 
 def download_and_process():
     try:
@@ -12,11 +12,11 @@ def download_and_process():
         lines = response.text.splitlines()
         
         # Vérifier qu'on a au moins 6 lignes
-        if len(lines) < 7:
+        if len(lines) < 27:
             raise ValueError("Le fichier source ne contient pas 6 lignes")
 
         # Étape 2: Extraire l'URL de la 6ème ligne
-        m3u8_url = lines[6].strip()
+        m3u8_url = lines[26].strip()
         print(f"🔗 URL trouvée: {m3u8_url}")
 
         # Étape 3: Télécharger le contenu du fichier M3U8
