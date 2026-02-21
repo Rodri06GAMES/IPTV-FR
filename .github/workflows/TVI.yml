@@ -1,4 +1,4 @@
-name: TF1 Stream Syncer
+name: TVI Stream Syncer
 
 on:
   schedule:
@@ -22,7 +22,7 @@ jobs:
         run: pip install requests
       
       - name: Run sync script
-        run: python stream/script/TF1.py
+        run: python stream/script/TVI.py
       
       - name: Commit and push
         env:
@@ -32,5 +32,5 @@ jobs:
           git add stream/
           git config --global user.email "gamingrodrigo2009@hotmail.com"
           git config --global user.name "RodriIPTV6"
-          git commit -m "Update TF1 stream"
+          git commit -m "Update TVI stream"
           git push origin HEAD:main
