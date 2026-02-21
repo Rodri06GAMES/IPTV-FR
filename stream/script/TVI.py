@@ -1,29 +1,40 @@
 import requests
-import os
+import re
 
-SOURCE_M3U = "https://raw.githubusercontent.com/LITUATUI/M3UPT/refs/heads/main/M3U/TVI.m3u"
-OUTPUT_FILE = "stream/tvi.m3u8"
+M3U_FILE = "stream/TVI.m3u8"
+TOKEN_URL = "https://services.iol.pt/matrix?userId"
 
-def download_and_copy():
+def update_wms_auth_sign():
     try:
-        # Télécharger le fichier source
-        response = requests.get(SOURCE_M3U, timeout=10)
-        response.raise_for_status()
+        # 1️⃣ Récupérer le nouveau token (équivalent à wget -qO-)
+        token_response = requests.get(TOKEN_URL, timeout=10)
+        token_response.raise_for_status()
+        new_token = token_response.text.strip()
 
-        # Créer le dossier si nécessaire
-        os.makedirs("stream", exist_ok=True)
+        print(f"🔑 Nouveau token récupéré: {new_token}")
 
-        # Copier tout le contenu tel quel dans le fichier output
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(response.text)
+        # 2️⃣ Lire le fichier M3U
+        with open(M3U_FILE, "r", encoding="utf-8") as f:
+            content = f.read()
 
-        print(f"✅ Toutes les lignes ont été copiées dans {OUTPUT_FILE}")
+        # 3️⃣ Remplacer wmsAuthSign=... par le nouveau token
+        updated_content = re.sub(
+            r"wmsAuthSign=[^&]*",
+            f"wmsAuthSign={new_token}",
+            content
+        )
+
+        # 4️⃣ Écrire le fichier modifié
+        with open(M3U_FILE, "w", encoding="utf-8") as f:
+            f.write(updated_content)
+
+        print("✅ Fichier TVI.m3u mis à jour avec succès.")
         return True
 
     except Exception as e:
-        print(f"❌ Erreur: {str(e)}")
+        print(f"❌ Erreur: {e}")
         return False
 
+
 if __name__ == "__main__":
-    if not download_and_copy():
-        exit(1)
+    update_wms_auth_sign()
