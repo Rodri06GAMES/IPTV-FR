@@ -2,12 +2,14 @@ import requests
 import re
 import os
 
-M3U_FILE = "stream/TVI.m3u8"
-TOKEN_URL = "https://services.iol.pt/matrix?userId="  # ← adiciona o userId aqui ou via variável de ambiente
+M3U8_OUTPUT = "stream/TVI.m3u8"
+TOKEN_URL = "https://services.iol.pt/matrix?userId="
 
-def update_wms_auth_sign():
+SOURCE_URL_BASE = "https://video-auth6.iol.pt/live_tvi/live_tvi/playlist.m3u8?wmsAuthSign="
+
+def update_tvi_m3u8():
     try:
-        # 1️⃣ Récupérer le nouveau token
+        # 1️⃣ Obter o token
         token_response = requests.get(TOKEN_URL, timeout=10)
         token_response.raise_for_status()
         new_token = token_response.text.strip()
@@ -16,35 +18,32 @@ def update_wms_auth_sign():
             print("❌ Token inválido ou resposta inesperada.")
             return False
 
-        print(f"🔑 Novo token obtido: {new_token}")
+        print(f"🔑 Token obtido: {new_token}")
 
-        # 2️⃣ Lire le fichier M3U
-        with open(M3U_FILE, "r", encoding="utf-8") as f:
-            content = f.read()
+        # 2️⃣ Construir a URL com o token
+        source_url = f"{SOURCE_URL_BASE}{new_token}"
+        print(f"🌐 URL fonte: {source_url}")
 
-        # 3️⃣ Remplacer wmsAuthSign=...
-        updated_content = re.sub(
-            r"wmsAuthSign=[^&\s]*",
-            f"wmsAuthSign={re.escape(new_token)}",  # ← re.escape() importante
-            content
-        )
+        # 3️⃣ Obter o conteúdo do ficheiro m3u8
+        m3u8_response = requests.get(source_url, timeout=10)
+        m3u8_response.raise_for_status()
+        m3u8_content = m3u8_response.text
 
-        if content == updated_content:
-            print("ℹ️ Nenhuma alteração necessária.")
-            return True
+        if not m3u8_content.strip().startswith("#EXTM3U"):
+            print("❌ Conteúdo m3u8 inválido.")
+            return False
 
-        # 4️⃣ Écrire le fichier modifié
-        with open(M3U_FILE, "w", encoding="utf-8") as f:
-            f.write(updated_content)
+        print(f"📄 Conteúdo m3u8 obtido ({len(m3u8_content)} caracteres).")
 
-        print("✅ Ficheiro TVI.m3u atualizado com sucesso.")
+        # 4️⃣ Guardar no ficheiro TVI.m3u8
+        with open(M3U8_OUTPUT, "w", encoding="utf-8") as f:
+            f.write(m3u8_content)
+
+        print(f"✅ Ficheiro {M3U8_OUTPUT} atualizado com sucesso.")
         return True
 
     except requests.exceptions.RequestException as e:
         print(f"❌ Erro de rede: {e}")
-        return False
-    except FileNotFoundError:
-        print(f"❌ Ficheiro '{M3U_FILE}' não encontrado.")
         return False
     except Exception as e:
         print(f"❌ Erro inesperado: {e}")
@@ -52,5 +51,5 @@ def update_wms_auth_sign():
 
 
 if __name__ == "__main__":
-    success = update_wms_auth_sign()
-    exit(0 if success else 1)  # ← importante para a GitHub Action detectar falhas
+    success = update_tvi_m3u8()
+    exit(0 if success else 1)
