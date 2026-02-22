@@ -2,7 +2,7 @@ name: TVI Stream Syncer
 
 on:
   schedule:
-    - cron: 0 */3 * * *
+    - cron: 0 */2 * * *
     # Toutes les 3 heures
   workflow_dispatch:
 
