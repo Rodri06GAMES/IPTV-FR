@@ -1,36 +1,27 @@
-name: TVI Stream Syncer
+name: Update TVI.m3u8
 
 on:
   schedule:
-    - cron: 0 */2 * * *
-    # Toutes les 3 heures
-  workflow_dispatch:
+    - cron: '0 * * * *'  # Toutes les heures
+  workflow_dispatch:       # Déclenchement manuel possible
 
 jobs:
-  sync:
+  update:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          
-      - name: Install dependencies
-        run: pip install requests
-      
-      - name: Run sync script
-        run: python stream/script/TVI.py
-      
-      - name: Commit and push
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: 📥 Checkout du repository
+        uses: actions/checkout@v4
+
+      - name: 🔑 Obter token e atualizar TVI.m3u8
+        run: sh stream/Script/TVI.sh
+
+      - name: 📤 Commit e push das alterações
         run: |
-          git remote set-url origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
-          git add stream/
-          git config --global user.email "gamingrodrigo2009@hotmail.com"
-          git config --global user.name "RodriIPTV6"
-          git commit -m "Update TVI stream"
-          git push origin HEAD:main
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add TVI.m3u8
+          git diff --cached --quiet || git commit -m "🔄 Update TVI.m3u8 token [$(date -u '+%Y-%m-%d %H:%M:%S')] UTC"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
