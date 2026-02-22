@@ -9,6 +9,6 @@ fi
 
 echo "🔑 Token obtido: $TOKEN"
 
-sed -i "/live_tvi\/live_tvi/ c https://video-auth6.iol.pt/live_tvi/live_tvi/playlist.m3u8?wmsAuthSign=$TOKEN" TVI.m3u8
+sed -i "/live_tvi\/live_tvi/ c https://video-auth6.iol.pt/live_tvi/live_tvi/playlist.m3u8?wmsAuthSign=$TOKEN" stream/TVI.m3u8
 
 echo "✅ TVI.m3u8 atualizado com sucesso."
