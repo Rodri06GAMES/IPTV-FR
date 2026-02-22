@@ -8,7 +8,12 @@ if [ -z "$TOKEN" ]; then
 fi
 
 echo "🔑 Token obtido: $TOKEN"
+echo "📄 Conteúdo atual do ficheiro:"
+cat stream/TVI.m3u8
 
+echo ""
+echo "🔍 A tentar substituição..."
 sed -i "/live_tvi\/live_tvi/ c https://video-auth6.iol.pt/live_tvi/live_tvi/playlist.m3u8?wmsAuthSign=$TOKEN" stream/TVI.m3u8
 
-echo "✅ TVI.m3u8 atualizado com sucesso."
+echo "📄 Conteúdo após substituição:"
+cat stream/TVI.m3u8
