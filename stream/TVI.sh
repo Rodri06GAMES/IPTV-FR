@@ -8,7 +8,6 @@ if [ -z "$CONTENT" ]; then
     exit 1
 fi
 
-echo "$CONTENT" > stream/TVI.m3u8
+echo "$CONTENT" > TVI.m3u8
 
-echo "✅ stream/TVI.m3u8 criado com sucesso."
-cat stream/TVI.m3u8
+echo "✅ TVI.m3u8 criado com sucesso."
