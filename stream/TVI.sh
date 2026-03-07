@@ -1,14 +1,20 @@
 #!/bin/sh
 
-TOKEN=$(wget -qO- "https://services.iol.pt/matrix?userId=" 2>/dev/null)
+# 1️⃣ Obter o conteúdo completo do m3u8
+CONTENT=$(wget -qO- "https://video-auth6.iol.pt/live_tvi/live_tvi/playlist.m3u8?wmsAuthSign=$(wget -qO- https://services.iol.pt/matrix?userId= 2>/dev/null)" 2>/dev/null \
+| sed "s#edge_servers#https://video-auth6.iol.pt/edge_servers#g")
 
-if [ -z "$TOKEN" ]; then
-    echo "❌ Token inválido."
+if [ -z "$CONTENT" ]; then
+    echo "❌ Conteúdo m3u8 inválido."
     exit 1
 fi
 
-echo "🔑 Token obtido: $TOKEN"
+# 2️⃣ Criar o ficheiro com cabeçalho correto
+cat > stream/TVI.m3u8 << EOF
+#EXTM3U
+#EXT-X-VERSION:3
+$CONTENT
+EOF
 
-sed -i "s#wmsAuthSign=[^&]*#wmsAuthSign=$TOKEN#g" stream/TVI.m3u8
-
-echo "✅ m3u8/TVI.m3u8 atualizado com sucesso."
+echo "✅ m3u8/TVI.m3u8 criado com sucesso."
+cat stream/TVI.m3u8
