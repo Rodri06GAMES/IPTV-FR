@@ -1,27 +1,27 @@
-name: Update TVI.m3u8
-
+name: Update streams
 on:
   schedule:
-    - cron: '0 */2 * * *'  # Toutes les heures
-  workflow_dispatch:       # Déclenchement manuel possible
+    - cron: "0 */2 * * *"
 
 jobs:
-  update:
+  Update-streams:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout du repository
-        uses: actions/checkout@v4
+    
+      - name: checkout
+        uses: actions/checkout@v5
 
-      - name: 🔑 Obter token e atualizar TVI.m3u8
-        run: sh stream/TVI.sh
+      - name: update streams
+        run: cd m3u8 && sh TVI.sh
 
-      - name: 📤 Commit e push das alterações
+      - name: setup git config
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add stream/TVI.m3u8
-          git diff --cached --quiet || git commit -m "🔄 Update TVI.m3u8 token [$(date -u '+%Y-%m-%d %H:%M:%S')] UTC"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git config user.name "🚀 HAL 9000"
+          git config user.email "<>"
+
+      - name: commit
+        run: |
+          git pull
+          cd M3U && git add *.m3u8
+          git commit -m "Update streams"
+          git push origin main
